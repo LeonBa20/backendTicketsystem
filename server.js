@@ -1,5 +1,7 @@
-const express = require("express");
-const cors = require("cors");
+import Verification2 from "./Verification2.js";
+
+import express from 'express';
+import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -17,7 +19,7 @@ app.use(express.json());
 
 app.get('/echo/:word', (req, res) => {
     res.json({ "echo": req.params.word })
-});
+}); 
 
 app.post('/shirt/:name', (req, res) => {
 
@@ -27,6 +29,16 @@ app.post('/shirt/:name', (req, res) => {
         shirt: `test ${type} and has the type  ${name}`,
     })
 });
+
+app.get('/ticket/:id', (req, res) => {
+    const verificator = new Verification2();
+    const result = verificator.verificate(req.params.id);
+    res.json({ "ergebnis": result })
+}); 
+
+/*const verificator = new Verification2();
+verificator.verificate(1);*/
+
 
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
