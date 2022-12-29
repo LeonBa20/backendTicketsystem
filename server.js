@@ -1,4 +1,4 @@
-import Verification2 from "./Verification2.js";
+import verificate from "./Verification2.js";
 
 import express from 'express';
 import cors from 'cors';
@@ -31,14 +31,9 @@ app.post('/shirt/:name', (req, res) => {
 });
 
 app.get('/ticket/:id', (req, res) => {
-    const verificator = new Verification2();
-    const result = verificator.verificate(req.params.id);
+    const result = verificate(req.params);
     res.json({ "ergebnis": result })
 }); 
-
-/*const verificator = new Verification2();
-verificator.verificate(1);*/
-
 
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
