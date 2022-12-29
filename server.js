@@ -24,7 +24,7 @@ app.post('/shirt/:name', (req, res) => {
     const { name } = req.params;
     const { type } = req.body; // req.body.type
     res.send({
-        shirt: `test ${type} and has the type loool  ${name}`,
+        shirt: `test ${type} and has the type  ${name}`,
     })
 });
 
