@@ -1,4 +1,4 @@
-import verificate from "./Verification2.js";
+import verificate from "./Services/Verification.js";
 import pkg from 'pg';
 
 import express from 'express';
@@ -32,22 +32,6 @@ app.post('/shirt/:name', (req, res) => {
 });
 
 app.get('/ticket/:id', async (req, res) => {
-
-    /*const client = new pkg.Client({
-        host: 'bq3zrot8kwkjsoiu0e7z-postgresql.services.clever-cloud.com',
-        port: '5432',
-        user: 'u4bj5mr4jis06pbvlw5t',
-        password: 'xJzpptRJm9iXMmmuQkzr',
-        database: 'bq3zrot8kwkjsoiu0e7z'
-      });
-    
-      client.connect();
-      
-      client.query('SELECT ticketid FROM tickets WHERE ticketid =' + req.params.id, (err, result) => {
-        res.json({"ergebnis": result.rows[0].ticketid});
-        client.end();
-      });*/
-
       let ergebnis = await verificate(req.params.id);
       res.json({"ergebnis": ergebnis});
     }); 
