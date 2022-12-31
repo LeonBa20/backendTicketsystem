@@ -1,5 +1,6 @@
-import verificate from "./Services/Verification.js";
+//import verificate from "./Services/Verification.js";
 import pkg from 'pg';
+import { Verification } from './Services/Verification.js';
 
 import express from 'express';
 import cors from 'cors';
@@ -32,10 +33,11 @@ app.post('/shirt/:name', (req, res) => {
 });
 
 app.get('/ticket/:id', async (req, res) => {
-      let ergebnis = await verificate(req.params.id);
-      res.json({"ergebnis": ergebnis});
+    let v = new Verification();  
+    let result = await v.verificate(req.params.id);
+    v.getOwner(req.params.id); //not ready
+      res.json({"Ticket valid": result});
     }); 
-
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
