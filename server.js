@@ -1,7 +1,5 @@
-//import verificate from "./Services/Verification.js";
 import pkg from 'pg';
 import { Verification } from './Services/Verification.js';
-
 import express from 'express';
 import cors from 'cors';
 
@@ -19,10 +17,6 @@ app.options("", (req, res, next) => {
 
 app.use(express.json());
 
-app.get('/echo/:word', (req, res) => {
-    res.json({ "echo": req.params.word })
-}); 
-
 app.post('/shirt/:name', (req, res) => {
 
     const { name } = req.params;
@@ -34,9 +28,22 @@ app.post('/shirt/:name', (req, res) => {
 
 app.get('/ticket/:id', async (req, res) => {
     let v = new Verification();  
-    let result = await v.verificate(req.params.id);
-    v.getOwner(req.params.id); //not ready
-      res.json({"Ticket valid": result});
+    try {
+        let result = await v.verificate(req.params.id);
+        let owner = await v.getOwner(req.params.id);
+        res.json({
+            "ticketid": req.params.id,
+            "active": result,
+            "Owner": {
+              "userid": owner.userid,
+              "firstname": owner.firstname,
+              "lastname": owner.lastname,
+              "birthdate": owner.birthdate
+            }
+          });
+    } catch (error) {
+        res.json({"Error": "Ticket not found"});
+    }
     }); 
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
