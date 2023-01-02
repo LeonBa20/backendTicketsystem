@@ -1,5 +1,5 @@
 import pkg from 'pg';
-import { Verification } from './Services/Verification.js';
+import { Ticketservice } from './Services/Ticketservice.js';
 import express from 'express';
 import cors from 'cors';
 
@@ -26,11 +26,11 @@ app.post('/shirt/:name', (req, res) => {
     })
 });
 
-app.get('/ticket/:id', async (req, res) => {
-    let v = new Verification();  
+app.get('/api/ticket/status/:id', async (req, res) => {
+    let t = new Ticketservice();  
     try {
-        let result = await v.verificate(req.params.id);
-        let owner = await v.getOwner(req.params.id);
+        let result = await t.verificate(req.params.id);
+        let owner = await t.getOwner(req.params.id);
         res.json({
             "ticketid": req.params.id,
             "active": result,
@@ -42,9 +42,29 @@ app.get('/ticket/:id', async (req, res) => {
             }
           });
     } catch (error) {
-        res.json({"Error": "Ticket not found"});
+        res.json({"Error": error.message});
     }
     }); 
+
+    app.post('/api/ticket/deactivate/:id', async (req, res) => {
+        let t = new Ticketservice();  
+        try {
+            let result = await t.deactivateTicket(req.params.id);
+            res.send({ result: result });
+        } catch (error) {
+            res.send({ Error: error.message });
+        }
+    });
+
+    app.post('/api/ticket/activate/:id', async (req, res) => {
+        let t = new Ticketservice();  
+        try {
+            let result = await t.activateTicket(req.params.id);
+            res.send({ result: result });
+        } catch (error) {
+            res.send({ Error: error.message });
+        }
+    });
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 

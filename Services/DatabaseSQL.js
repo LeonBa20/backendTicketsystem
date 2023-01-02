@@ -10,7 +10,7 @@ export default async function dbsql(sqlCommand) {
       });
     
     await client.connect();
-      const res = await client.query(sqlCommand); //.catch((error)=>{console.log(error)}
+      const res = await client.query(sqlCommand);
       client.end();
       return res;
 }

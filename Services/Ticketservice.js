@@ -1,8 +1,8 @@
-import dbsql from "../Services/DatabaseSQL.js";
+import dbsql from "./DatabaseSQL.js";
 import { Ticket } from '../AllObjects/Ticket.js';
 import { User } from '../AllObjects/User.js';
 
-export class Verification{
+export class Ticketservice{
 
   constructor() {}
 
@@ -23,6 +23,30 @@ export class Verification{
     } else {  
       let u = new User(res.rows[0].userid, res.rows[0].firstname, res.rows[0].lastname, res.rows[0].birthdate);
       return u; 
+    }
+  }
+
+  async deactivateTicket(ticketid) {
+    const res = await dbsql('UPDATE tickets SET active = false WHERE ticketid =' +ticketid);
+    if (res.rowCount === 0) {
+      throw new Error("Ticketid not found");
+    } else if (res.rowCount > 1) {
+      throw new Error("Several tickets changed!");
+    } else {
+      let result = "Ticket deactivated";
+      return result;
+    }
+  }
+
+  async activateTicket(ticketid) {
+    const res = await dbsql('UPDATE tickets SET active = true WHERE ticketid =' +ticketid);
+    if (res.rowCount === 0) {
+      throw new Error('Ticketid not found');
+    } else if (res.rowCount > 1) {
+      throw new Error("Several tickets changed!");
+    } else {
+      let result = "Ticket activated";
+      return result;
     }
   }
 }
