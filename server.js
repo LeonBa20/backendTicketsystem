@@ -23,12 +23,12 @@ app.get('/api/ticket/status/:id', async (req, res) => {
         let result = await t.verificate(req.params.id);
         let owner = await t.getOwner(req.params.id);
         res.json({
-            "ticketid": req.params.id,
+            "ticket_id": req.params.id,
             "active": result,
             "Owner": {
-              "userid": owner.userid,
-              "firstname": owner.firstname,
-              "lastname": owner.lastname,
+              "user_id": owner.user_id,
+              "first_name": owner.first_name,
+              "last_name": owner.last_name,
               "birthdate": owner.birthdate
             }
           });
@@ -56,6 +56,12 @@ app.get('/api/ticket/status/:id', async (req, res) => {
             res.send({ Error: error.message });
         }
     });
+
+    //User erstellen POST
+    //Passwort prüfen GET
+    //User delete DELETE
+    //Tickets abfragen?
+    //Event Tabelle und abfragen?
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 

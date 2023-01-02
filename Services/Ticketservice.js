@@ -6,8 +6,12 @@ export class Ticketservice{
 
   constructor() {}
 
-  async verificate(ticketid) {
-    const res = await dbsql('SELECT active FROM tickets WHERE ticketid = ' +ticketid);
+  async createTicketTable() {
+    await dbsql('CREATE TABLE tickets (ticket_id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users (user_id), event_name VARCHAR(255) NOT NULL, event_date DATE NOT NULL, ticket_details VARCHAR(255) NOT NULL, active BOOLEAN DEFAULT TRUE, redeem_days INTEGER, last_redeemed DATE)');
+  }
+
+  async verificate(ticket_id) {
+    const res = await dbsql('SELECT active FROM tickets WHERE ticket_id = ' +ticket_id);
     if (res.rows[0] != null) {
       let result = res.rows[0].active;
       return result      
@@ -16,20 +20,20 @@ export class Ticketservice{
     }
   }
 
-  async getOwner(ticketid){
-    const res = await dbsql('SELECT u.userid, u.firstname, u.lastname, u.birthdate FROM users u INNER JOIN tickets t ON u.userid = t.userid WHERE t.ticketid = ' +ticketid);
+  async getOwner(ticket_id){
+    const res = await dbsql('SELECT u.user_id, u.first_name, u.last_name, u.birthdate FROM users u INNER JOIN tickets t ON u.user_id = t.user_id WHERE t.ticket_id = ' +ticket_id);
     if (res.rows[0] == null) {
       throw new Error("Ticket not found");
     } else {  
-      let u = new User(res.rows[0].userid, res.rows[0].firstname, res.rows[0].lastname, res.rows[0].birthdate);
+      let u = new User(res.rows[0].user_id, null, null, res.rows[0].first_name, res.rows[0].last_name, res.rows[0].birthdate, null, null);
       return u; 
     }
   }
 
-  async deactivateTicket(ticketid) {
-    const res = await dbsql('UPDATE tickets SET active = false WHERE ticketid =' +ticketid);
+  async deactivateTicket(ticket_id) {
+    const res = await dbsql('UPDATE tickets SET active = false WHERE ticket_id =' +ticket_id);
     if (res.rowCount === 0) {
-      throw new Error("Ticketid not found");
+      throw new Error("Ticket_id not found");
     } else if (res.rowCount > 1) {
       throw new Error("Several tickets changed!");
     } else {
@@ -38,10 +42,10 @@ export class Ticketservice{
     }
   }
 
-  async activateTicket(ticketid) {
-    const res = await dbsql('UPDATE tickets SET active = true WHERE ticketid =' +ticketid);
+  async activateTicket(ticket_id) {
+    const res = await dbsql('UPDATE tickets SET active = true WHERE ticket_id =' +ticket_id);
     if (res.rowCount === 0) {
-      throw new Error('Ticketid not found');
+      throw new Error('Ticket_id not found');
     } else if (res.rowCount > 1) {
       throw new Error("Several tickets changed!");
     } else {
