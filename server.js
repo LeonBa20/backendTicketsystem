@@ -17,15 +17,6 @@ app.options("", (req, res, next) => {
 
 app.use(express.json());
 
-app.post('/shirt/:name', (req, res) => {
-
-    const { name } = req.params;
-    const { type } = req.body; // req.body.type
-    res.send({
-        shirt: `test ${type} and has the type  ${name}`,
-    })
-});
-
 app.get('/api/ticket/status/:id', async (req, res) => {
     let t = new Ticketservice();  
     try {
