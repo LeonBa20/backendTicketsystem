@@ -30,7 +30,7 @@ app.post('/api/ticket/addExamples', async (req, res) => {
     res.send(200);
 });
 
-app.delete('/api/user/deleteTable', async (req, res) => {
+app.delete('/api/ticket/deleteTable', async (req, res) => {
     let ts = new Ticketservice();  
     await ts.deleteTable();
     res.send(200);
