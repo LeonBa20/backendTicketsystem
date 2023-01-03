@@ -48,7 +48,7 @@ app.post('/api/user/addExamples', async (req, res) => {
     res.send(200);
 });
 
-app.post('/api/user/deleteTable', async (req, res) => {
+app.delete('/api/user/deleteTable', async (req, res) => {
     let us = new Userservice();  
     await us.deleteTable();
     res.send(200);
