@@ -29,8 +29,7 @@ app.get('/api/ticket/status/:id', async (req, res) => {
               "user_id": owner.user_id,
               "first_name": owner.first_name,
               "last_name": owner.last_name,
-              "birthdate": owner.birthdate,
-              "test": "Jonas ist cool",
+              "birthdate": owner.birthdate
             }
           });
     } catch (error) {
