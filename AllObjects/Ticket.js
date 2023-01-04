@@ -1,9 +1,10 @@
 export class Ticket {
-  constructor(ticketId, userId, eventName, eventDate, ticketDetails, active, redeemDays, lastRedeemed) {
+  constructor(ticketId, userId, eventName, startDate, endDate, ticketDetails, active, redeemDays, lastRedeemed) {
     this.ticketId = ticketId;
     this.userId = userId;
     this.eventName = eventName;
-    this.eventDate = eventDate;
+    this.startDate = startDate;
+    this.endDate = endDate;
     this.ticketDetails = ticketDetails;
     this.active = active;
     this.redeemDays = redeemDays;
@@ -34,12 +35,20 @@ export class Ticket {
     this.eventName = eventName;
   }
 
-  getEventDate() {
-    return this.eventDate;
+  getStartDate() {
+    return this.startDate;
   }
 
-  setEventDate(eventDate) {
-    this.eventDate = eventDate;
+  setStartDate(startDate) {
+    this.startDate = startDate;
+  }
+
+  getEndDate() {
+    return this.endDate;
+  }
+
+  setEndDate(endDate) {
+    this.endDate = endDate;
   }
 
   getTicketDetails() {
@@ -48,9 +57,5 @@ export class Ticket {
 
   setTicketDetails(ticketDetails) {
     this.ticketDetails = ticketDetails;
-  }
-
-  isActive() {
-    return this.active;
   }
 }

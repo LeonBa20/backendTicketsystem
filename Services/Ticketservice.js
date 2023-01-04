@@ -7,7 +7,15 @@ export class Ticketservice{
   constructor() {}
 
   async createTicketTable() {
-    await dbsql('CREATE TABLE tickets (ticket_id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users (user_id), event_name VARCHAR(255) NOT NULL, event_date DATE NOT NULL, ticket_details VARCHAR(255) NOT NULL, active BOOLEAN DEFAULT TRUE, redeem_days INTEGER, last_redeemed DATE)');
+    await dbsql('CREATE TABLE tickets (ticket_id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users (user_id), event_name VARCHAR(255) NOT NULL, start_date DATE NOT NULL, end_date DATE NOT NULL, ticket_details VARCHAR(255) NOT NULL, active BOOLEAN DEFAULT TRUE, redeem_days INTEGER, last_redeemed DATE)');
+  }
+
+  async exampleData() {
+    //await dbsql('INSERT INTO tickets (user_id, event_name, start_date, end_date, ticket_details, redeem_days) VALUES (1, 'Skipass Oberwallis', '2022-11-01', '2023-04-30', 'Saisonticket', 5), (1, 'Skipass Wagrain', '2023-01-01', '2023-01-30', 'Monatsticket, Januar', NULL), (1, 'Tomorrowland', '2023-07-15', '2023-07-17', '3-Tages-Ticket, VIP-Zugang', NULL), (3, 'Skipass Zermatt', '2023-02-01', '2023-04-01', '2-Monatsticket, Februar - März', 10), (3, 'Rolling Loud', '2023-03-03', '2023-03-05', '3-Tages-Ticket, VIP-Zugang', NULL)');
+  }
+
+  async deleteTable() {
+    await dbsql('DROP TABLE tickets');
   }
 
   async verificate(ticket_id) {
@@ -47,10 +55,24 @@ export class Ticketservice{
     if (res.rowCount === 0) {
       throw new Error('Ticket_id not found');
     } else if (res.rowCount > 1) {
-      throw new Error("Several tickets changed!");
+      throw new Error('Several tickets changed!');
     } else {
       let result = "Ticket activated";
       return result;
+    }
+  }
+
+  async getAllTicketsOfUser(user_id) {
+    const res = await dbsql('SELECT * FROM tickets WHERE user_id = ' + user_id);
+    if (res.rowCount === 0) {
+      throw new Error('No Ticket found');
+    } else {
+      const ticketlist = [];
+      for (const ticket of res.rows) {
+        let t = new Ticket(ticket.ticket_id, ticket.user_id, ticket.event_name, ticket.start_date, ticket.end_date, ticket.ticket_details, ticket.active, ticket.redeem_days, ticket.last_redeemed);
+        ticketlist.push(t);
+      }
+      return ticketlist;
     }
   }
 }
