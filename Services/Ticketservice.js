@@ -11,7 +11,7 @@ export class Ticketservice{
   }
 
   async exampleData() {
-    //await dbsql('INSERT INTO tickets (user_id, event_name, start_date, end_date, ticket_details, redeem_days) VALUES (1, 'Skipass Oberwallis', '2022-11-01', '2023-04-30', 'Saisonticket', 5), (1, 'Skipass Wagrain', '2023-01-01', '2023-01-30', 'Monatsticket, Januar'), (1, 'Tomorrowland', '2023-07-15', '2023-07-17', '3-Tages-Ticket, VIP-Zugang'), (3, 'Skipass Zermatt', '2023-02-01', '2023-04-01', '2-Monatsticket, Februar - März', 10), (3, 'Rolling Loud', '2023-03-03', '2023-03-05', '3-Tages-Ticket, VIP-Zugang)');
+    //await dbsql('INSERT INTO tickets (user_id, event_name, start_date, end_date, ticket_details, redeem_days) VALUES (1, 'Skipass Oberwallis', '2022-11-01', '2023-04-30', 'Saisonticket', 5), (1, 'Skipass Wagrain', '2023-01-01', '2023-01-30', 'Monatsticket, Januar', NULL), (1, 'Tomorrowland', '2023-07-15', '2023-07-17', '3-Tages-Ticket, VIP-Zugang', NULL), (3, 'Skipass Zermatt', '2023-02-01', '2023-04-01', '2-Monatsticket, Februar - März', 10), (3, 'Rolling Loud', '2023-03-03', '2023-03-05', '3-Tages-Ticket, VIP-Zugang', NULL)');
   }
 
   async deleteTable() {
@@ -55,7 +55,7 @@ export class Ticketservice{
     if (res.rowCount === 0) {
       throw new Error('Ticket_id not found');
     } else if (res.rowCount > 1) {
-      throw new Error("Several tickets changed!");
+      throw new Error('Several tickets changed!');
     } else {
       let result = "Ticket activated";
       return result;
@@ -64,6 +64,15 @@ export class Ticketservice{
 
   async getAllTicketsOfUser(user_id) {
     const res = await dbsql('SELECT * FROM tickets WHERE user_id = ' + user_id);
-    console.log(res);
+    if (res.rowCount === 0) {
+      throw new Error('No Ticket found');
+    } else {
+      const ticketlist = [];
+      for (const ticket of res.rows) {
+        let t = new Ticket(ticket.ticket_id, ticket.user_id, ticket.event_name, ticket.start_date, ticket.end_date, ticket.ticket_details, ticket.active, ticket.redeem_days, ticket.last_redeemed);
+        ticketlist.push(t);
+      }
+      return ticketlist;
+    }
   }
 }
