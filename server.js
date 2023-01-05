@@ -3,6 +3,7 @@ import { Ticketservice } from './Services/Ticketservice.js';
 import { Userservice } from './Services/Userservice.js';
 import express from 'express';
 import cors from 'cors';
+import { User } from './AllObjects/User.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -102,7 +103,29 @@ app.get('/api/ticket/status/:id', async (req, res) => {
         } catch (error) {
             res.json({"Error": error.message});
         }
-        });
+    });
+    
+    app.post('/api/user/register', async (req, res) => {
+        let us = new Userservice();
+        if (req.body.email == null) {
+            res.json({
+                "email": 'fill in', 
+                "password": 'fill in',
+                "first_name": 'fill in', 
+                "last_name": 'fill in', 
+                "birthdate": 'YEAR-MONTH-DAY'
+            });
+        } else {
+            let user = new User(null, req.body.password, req.body.email, req.body.first_name, req.body.last_name, req.body.birthdate, null, null);
+            try {
+                let user_email = await us.register(user);
+                res.json({"Account": user_email});
+            } catch(error) {
+                res.json({Error: error.message});
+            }
+        }
+        
+    });
 
     //User erstellen POST
     //Passwort prüfen GET

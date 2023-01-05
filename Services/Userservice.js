@@ -10,11 +10,23 @@ export class Userservice{
       }
 
     async exampleData(){
-    // await dbsql('INSERT INTO users (password, email, first_name, last_name, birthdate) VALUES ('password1', 'max.mustermann@example.com', 'Max', 'Mustermann', '1980-01-01'), ('password2', 'john.doe@example.com', 'John', 'Doe', '1985-02-14'), ('password3', 'ellen.feuerstein@example.com', 'Ellen', 'Feuerstein', '1990-03-21'), ('password4', 'lena.mueller@example.com', 'Lena', 'Müller', '1995-04-28'), ('password5', 'katharina.musterfrau@example.com', 'Katharina', 'Musterfrau', '2000-05-05)');
+     await dbsql("INSERT INTO users (password, email, first_name, last_name, birthdate) VALUES ('password1', 'max.mustermann@example.com', 'Max', 'Mustermann', '1980-01-01'), ('password2', 'john.doe@example.com', 'John', 'Doe', '1985-02-14'), ('password3', 'ellen.feuerstein@example.com', 'Ellen', 'Feuerstein', '1990-03-21'), ('password4', 'lena.mueller@example.com', 'Lena', 'Müller', '1995-04-28'), ('password5', 'katharina.musterfrau@example.com', 'Katharina', 'Musterfrau', '2000-05-05')");
     }
 
     async deleteTable() {
       await dbsql('DROP TABLE users');
+    }
+
+    async register(user){
+      let res = await dbsql(`SELECT email FROM users WHERE email = '${user.email}'`);
+      if (res.rowCount === 0) {
+        await dbsql(`INSERT INTO users (password, email, first_name, last_name, birthdate) VALUES ('${user.password}', '${user.email}', '${user.first_name}', '${user.last_name}', '${user.birthdate}')`);
+        res = await dbsql(`SELECT email FROM users WHERE email = '${user.email}'`);
+        const user_email = res.rows[0].email;
+        return user_email;
+      } else {
+        throw new Error("E-Mail already in use!");
+      }
     }
     
 }
