@@ -1,3 +1,4 @@
+//In der server.js werden alle REST-Anfragen entgegengenommen und mithilfe der Service und Objekt-Klassen verarbeitet.
 import pkg from 'pg';
 import { Ticketservice } from './Services/Ticketservice.js';
 import { Userservice } from './Services/Userservice.js';
@@ -19,6 +20,7 @@ app.options("", (req, res, next) => {
 
 app.use(express.json());
 
+//Befehle zur Verwaltung der Ticket-Tabellen sowie Befüllung mit Testdaten
 app.post('/api/ticket/createTable', async (req, res) => {
     let ts = new Ticketservice();
     await ts.createTicketTable();
@@ -37,6 +39,7 @@ app.delete('/api/ticket/deleteTable', async (req, res) => {
     res.sendStatus(200);
 });
 
+//Befehle zur Verwaltung der User-Tabellen sowie Befüllung mit Testdaten
 app.post('/api/user/createTable', async (req, res) => {
     let us = new Userservice();
     await us.createUserTable();
@@ -55,6 +58,7 @@ app.delete('/api/user/deleteTable', async (req, res) => {
     res.sendStatus(200);
 });
 
+//Prüfung der Gültigkeit eines Tickets. Handelt es sich um ein Ticket mit tagesbasierter Einlösung, wird dies dementsprechend berücksichtigt. 
 app.get('/api/ticket/status/:id', async (req, res) => {
     let ts = new Ticketservice();
     try {
@@ -75,6 +79,7 @@ app.get('/api/ticket/status/:id', async (req, res) => {
     }
     });
 
+    //Deaktivierung eines Tickets
     app.post('/api/ticket/deactivate/:id', async (req, res) => {
         let ts = new Ticketservice();
         try {
@@ -85,6 +90,7 @@ app.get('/api/ticket/status/:id', async (req, res) => {
         }
     });
 
+    //Aktivierung eines Tickets
     app.post('/api/ticket/activate/:id', async (req, res) => {
         let ts = new Ticketservice();
         try {
@@ -95,6 +101,7 @@ app.get('/api/ticket/status/:id', async (req, res) => {
         }
     });
 
+    //Ausgabe aller Tickets eines Nutzers
     app.get('/api/ticket/allOfUser/:userid', async (req, res) => {
         let ts = new Ticketservice();
         try {
@@ -105,6 +112,7 @@ app.get('/api/ticket/status/:id', async (req, res) => {
         }
     });
     
+    //Registrierung eines Nutzers
     app.post('/api/user/register', async (req, res) => {
         let us = new Userservice();
         if (req.body.email == null) {
