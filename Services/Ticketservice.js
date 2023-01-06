@@ -1,6 +1,7 @@
 import dbsql from "./DatabaseSQL.js";
 import { Ticket } from '../AllObjects/Ticket.js';
 import { User } from '../AllObjects/User.js';
+import { Dateservice } from './Dateservice.js';
 
 export class Ticketservice{
 
@@ -19,12 +20,52 @@ export class Ticketservice{
   }
 
   async verificate(ticket_id) {
-    const res = await dbsql('SELECT active FROM tickets WHERE ticket_id = ' +ticket_id);
-    if (res.rows[0] != null) {
+    const res = await dbsql('SELECT * FROM tickets WHERE ticket_id = ' +ticket_id);
+  
+    //Prüfung, ob Ticket überhaupt vorhanden ist.
+  if (res.rows[0] != null) {
+    let redeemTest = true; 
+
+    //Prüfung, ob es sich um ein tagesgebundendes Ticket handelt. Ist dies der Fall, wird die ensprechende Methode aufgerufen, die das verarbeitet.
+    if (res.rows[0].redeem_days != null) {
+      redeemTest = await this.redeemTicket(ticket_id);
+    }
+
+    if (redeemTest === true) {
       let result = res.rows[0].active;
-      return result      
-    } else {
-      throw new Error("Ticket not found");
+      return result;
+    }
+    if (redeemTest === false) {
+      throw new Error("No more days for this event available");
+    } 
+   } else {
+    throw new Error("Ticket not found");
+   }
+  }
+
+  async redeemTicket(ticket_id) {
+    const res = await dbsql('SELECT * FROM tickets WHERE ticket_id = ' +ticket_id);
+    
+    //Formatierung der Daten (kalendarisch), um sie miteinander vergleichen zu können. Ist last_redeemed in der DB leer, wird es durch ein
+    //altes unbedeutsames Datum ersetzt. Das passiert, wenn bspw. zu Beginn das Ticket noch nie aktiviert wurde (also noch nicht genutzt). 
+    const ds = new Dateservice();
+    const formattedCurrentDate = ds.getFormattedDate(new Date());
+    let formattedTicketDate = '1900-01-01';
+    if (res.rows[0].last_redeemed != null) {
+      formattedTicketDate = ds.getFormattedDate(res.rows[0].last_redeemed);
+    }
+
+    //Prüfung, ob das Ticket überhaupt tagesgebunden ist (5 Tage nutzbar bspw.) und ob bzw wann es zuletzt aktiviert wurde. Dementsprechend
+    //wird das jeweilige If aufgerufen. Es wird ein True zurückgegeben, wenn das tagesabhängige Ticket erfolgreich geprüft und angepasst wurde.
+    //Ein False wird zurückgegeben, wenn die letzte Aktivierung in der Vergangenheit liegt und keine "redeem_days" mehr übrig sind.
+    if (res.rows[0].redeem_days > 0 &&  formattedCurrentDate != formattedTicketDate) {
+      dbsql(`UPDATE tickets SET redeem_days = redeem_days - 1 WHERE ticket_id = '${ticket_id}'`);
+      dbsql(`UPDATE tickets SET last_redeemed = NOW() WHERE ticket_id = '${ticket_id}'`);
+      return true;
+    } else if (res.rows[0].redeem_days >= 0 &&  formattedCurrentDate == formattedTicketDate) {
+      return true;
+    } else if (res.rows[0].redeem_days == 0 &&  formattedCurrentDate != formattedTicketDate) {
+      return false;
     }
   }
 

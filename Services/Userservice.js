@@ -6,7 +6,7 @@ export class Userservice{
     constructor() {}
 
     async createUserTable() {
-        await dbsql('CREATE TABLE users (user_id SERIAL PRIMARY KEY, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, first_name VARCHAR(255), last_name VARCHAR(255), birthdate DATE, created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW())');
+        await dbsql("CREATE TABLE users (user_id SERIAL PRIMARY KEY, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, first_name VARCHAR(255), last_name VARCHAR(255), birthdate DATE, created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW(), loggedIn BOOLEAN DEFAULT false)");
       }
 
     async exampleData(){
@@ -26,6 +26,36 @@ export class Userservice{
         return user_email;
       } else {
         throw new Error("E-Mail already in use!");
+      }
+    }
+
+    async login (email, password) {
+      let res = await dbsql(`SELECT email, password FROM users WHERE email = '${email}'`);
+
+      if (res.rows[0] != null) {
+        if (res.rows[0].password === password) {
+          await dbsql(`UPDATE users SET loggedin = true WHERE email = '${email}'`);
+          return true;
+        } else {
+          throw new Error("Wrong password.");
+        }
+      } else {
+        throw new Error("E-Mail does not exist!");
+      }
+    }
+
+    async logout (email) {
+      let res = await dbsql(`SELECT email, loggedin FROM users WHERE email = '${email}'`);
+
+      if (res.rows[0] != null) {
+        if (res.rows[0].loggedin === true) {
+          await dbsql(`UPDATE users SET loggedin = false WHERE email = '${email}'`);
+          return true;
+        } else {
+          throw new Error("User is not logged in.");
+        }
+      } else {
+        throw new Error("E-Mail does not exist!");
       }
     }
     

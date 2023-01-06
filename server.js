@@ -131,14 +131,43 @@ app.get('/api/ticket/status/:id', async (req, res) => {
             } catch(error) {
                 res.json({Error: error.message});
             }
-        }
-        
+        } 
     });
 
-    //User erstellen POST
-    //Passwort prüfen GET
+    app.patch('/api/user/login', async (req, res) => {
+        let us = new Userservice();
+        if (req.body.email == null) {
+            res.json({
+                "email": 'fill in', 
+                "password": 'fill in'
+            });
+        } else {
+            try {
+                let result = await us.login(req.body.email, req.body.password);
+                res.send({ login: result });
+            } catch (error) {
+                res.send({ Error: error.message });
+            }
+        }
+    });
+
+    app.patch('/api/user/logout', async (req, res) => {
+        let us = new Userservice();
+        if (req.body.email == null) {
+            res.json({
+                "email": 'fill in'
+            });
+        } else {
+            try {
+                let result = await us.logout(req.body.email);
+                res.send({ logout: result });
+            } catch (error) {
+                res.send({ Error: error.message });
+            }
+        }
+    });
+
     //User delete DELETE
-    //Verification finalisieren
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
