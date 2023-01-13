@@ -1,10 +1,9 @@
 //In der server.js werden alle REST-Anfragen entgegengenommen und mithilfe der Service und Objekt-Klassen verarbeitet.
-import pkg from 'pg';
 import { Ticketservice } from './Services/Ticketservice.js';
 import { Userservice } from './Services/Userservice.js';
+import { User } from './AllObjects/User.js';
 import express from 'express';
 import cors from 'cors';
-import { User } from './AllObjects/User.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
