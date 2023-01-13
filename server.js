@@ -58,6 +58,28 @@ app.delete('/api/user/deleteTable', async (req, res) => {
     res.sendStatus(200);
 });
 
+app.post('/api/createAllTables', async (req, res) => {
+    let ts = new Ticketservice();
+    let us = new Userservice();
+    await us.createUserTable();
+    await ts.createTicketTable();
+    await us.exampleData();
+    await ts.exampleData();
+    res.sendStatus(200);
+});
+
+app.delete('/api/resetAllTables', async (req, res) => {
+    let ts = new Ticketservice();
+    let us = new Userservice();
+    ts.deleteTable();
+    us.deleteTable();
+    await us.createUserTable();
+    await ts.createTicketTable();
+    await us.exampleData();
+    await ts.exampleData();
+    res.sendStatus(200);
+});
+
 //Prüfung der Gültigkeit eines Tickets. Handelt es sich um ein Ticket mit tagesbasierter Einlösung, wird dies dementsprechend berücksichtigt. 
 app.get('/api/ticket/status/:id', async (req, res) => {
     let ts = new Ticketservice();
@@ -167,7 +189,22 @@ app.get('/api/ticket/status/:id', async (req, res) => {
         }
     });
 
-    //User delete DELETE
+    app.delete('/api/user/delete', async (req, res) => {
+        let us = new Userservice();
+
+        if (req.body.email == null) {
+            res.json({
+                "email": 'fill in'
+            });
+        } else {
+            try {
+                let result = await us.deleteUser(req.body.email);
+                res.send({ logout: result });
+            } catch (error) {
+                res.send({ Error: error.message });
+            }
+        }
+    });
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 

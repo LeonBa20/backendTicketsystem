@@ -23,26 +23,34 @@ export class Ticketservice{
     const res = await dbsql('SELECT * FROM tickets WHERE ticket_id = ' +ticket_id);
   
     //Prüfung, ob Ticket überhaupt vorhanden ist.
-  if (res.rows[0] != null) {
-    let redeemTest = true; 
-
-    //Prüfung, ob es sich um ein tagesgebundendes Ticket handelt. Ist dies der Fall, wird die ensprechende Methode aufgerufen, die das verarbeitet.
-    if (res.rows[0].redeem_days != null) {
-      redeemTest = await this.redeemTicket(ticket_id);
+    if (res.rows[0] != null) {
+      let redeemTest = true; 
+      
+      //Prüfung, ob die Einlösung sich im angegebenen Zeitraum befindet. Ist dies nicht der Fall, wird ein entsprechender Error herausgegeben.
+      if (await this.isTicketDateValid(ticket_id) == true) {
+        //Prüfung, ob es sich um ein tagesgebundendes Ticket handelt. Ist dies der Fall, wird die ensprechende Methode aufgerufen, die das verarbeitet.
+        if (res.rows[0].redeem_days != null) {
+        redeemTest = await this.redeemTicket(ticket_id);
+        }
+        //Die Einlösung war erfolgreich oder es handelt sich um kein tagesbasiertes Ticket. Nun wird der Status des Tickets zurückgegeben. Dieser kann
+        //true oder false sein. Ist er false, bedeutet das, dass das Ticket deaktiviert vom Betreiber deaktiviert wurde.
+        if (redeemTest === true) {
+          let result = res.rows[0].active;
+          return result;
+        }
+        //Die Einlösung ist fehlgeschlagen. Das bedeutet, dass das Ticket nicht mehr einsetzbar ist, da alle Tage verbaucht wurden. 
+        if (redeemTest === false) {
+          throw new Error("No more days for this event available");
+        } 
+      } else {
+        throw new Error("Ticket is not valid today. Check date of ticket");
+      }
+    } else {
+      throw new Error("Ticket not found");
     }
-
-    if (redeemTest === true) {
-      let result = res.rows[0].active;
-      return result;
-    }
-    if (redeemTest === false) {
-      throw new Error("No more days for this event available");
-    } 
-   } else {
-    throw new Error("Ticket not found");
-   }
   }
 
+  //Methode, welche die Einlösung von tagebasierten Tickets vornimmt. 
   async redeemTicket(ticket_id) {
     const res = await dbsql('SELECT * FROM tickets WHERE ticket_id = ' +ticket_id);
     
@@ -65,6 +73,22 @@ export class Ticketservice{
     } else if (res.rows[0].redeem_days >= 0 &&  formattedCurrentDate == formattedTicketDate) {
       return true;
     } else if (res.rows[0].redeem_days == 0 &&  formattedCurrentDate != formattedTicketDate) {
+      return false;
+    }
+  }
+
+  //Methode, um zu prüfen, ob die Ticketeinlösung im angegebenen Gültigkeitszeitraum erfolgt.
+  async isTicketDateValid(ticket_id) {
+    const res = await dbsql('SELECT * FROM tickets WHERE ticket_id = ' +ticket_id);
+    
+    const ds = new Dateservice();
+    const start_date = ds.getFormattedDate(res.rows[0].start_date);
+    const end_date = ds.getFormattedDate(res.rows[0].end_date);
+    const formattedCurrentDate = ds.getFormattedDate(new Date());
+
+    if (ds.checkIfDateIsInRange(start_date, end_date, formattedCurrentDate) == true) {
+      return true;
+    } else {
       return false;
     }
   }

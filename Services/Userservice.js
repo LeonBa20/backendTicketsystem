@@ -58,5 +58,20 @@ export class Userservice{
         throw new Error("E-Mail does not exist!");
       }
     }
+
+    async deleteUser(email){
+      let res = await dbsql(`SELECT email, loggedin FROM users WHERE email = '${email}'`);
+
+      if (res.rows[0] != null) {
+        if (res.rows[0].loggedin === true) {
+          await dbsql(`DELETE FROM users WHERE email = '${email}'`);
+          return true;
+        } else {
+          throw new Error("User is not logged in.");
+        }
+      } else {
+        throw new Error("E-Mail does not exist!");
+      }
+    }
     
 }
