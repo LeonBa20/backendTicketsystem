@@ -164,8 +164,14 @@ app.get('/api/ticket/status/:id', async (req, res) => {
             });
         } else {
             try {
-                let result = await us.login(req.body.email, req.body.password);
-                res.send({ login: result });
+                let user = await us.login(req.body.email, req.body.password);
+                res.json({
+                    "user_id": user.user_id,
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "birthdate": user.birthdate
+                });
             } catch (error) {
                 res.send({ Error: error.message });
             }

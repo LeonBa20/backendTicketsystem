@@ -1,6 +1,7 @@
 import dbsql from "./DatabaseSQL.js";
 import { Ticket } from '../AllObjects/Ticket.js';
 import { User } from '../AllObjects/User.js';
+import { Dateservice } from "./Dateservice.js";
 
 export class Userservice{
     constructor() {}
@@ -30,12 +31,14 @@ export class Userservice{
     }
 
     async login (email, password) {
-      let res = await dbsql(`SELECT email, password FROM users WHERE email = '${email}'`);
-
+      let res = await dbsql(`SELECT * FROM users WHERE email = '${email}'`);
+      let ds = new Dateservice();
+      let u = new User(res.rows[0].user_id, res.rows[0].password, res.rows[0].email, res.rows[0].first_name, res.rows[0].last_name, ds.getFormattedDate(res.rows[0].birthdate), res.rows[0].created_at, res.rows[0].updated_at);
+      console.log(u);
       if (res.rows[0] != null) {
         if (res.rows[0].password === password) {
           await dbsql(`UPDATE users SET loggedin = true WHERE email = '${email}'`);
-          return true;
+          return u;
         } else {
           throw new Error("Wrong password.");
         }
