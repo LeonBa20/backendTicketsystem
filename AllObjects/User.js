@@ -9,73 +9,73 @@ export class User {
     created_at,
     updated_at
   ) {
-    this._user_id = user_id;
-    this._password = password;
-    this._email = email;
-    this._first_name = first_name;
-    this._last_name = last_name;
-    this._birthdate = birthdate;
-    this._created_at = created_at;
-    this._updated_at = updated_at;
+    this.user_id = user_id;
+    this.password = password;
+    this.email = email;
+    this.first_name = first_name;
+    this.last_name = last_name;
+    this.birthdate = birthdate;
+    this.created_at = created_at;
+    this.updated_at = updated_at;
   }
 
-  get user_id() {
-    return this._user_id;
+  getUser_id() {
+    return this.user_id;
   }
 
-  get password() {
-    return this._password;
+  getPassword() {
+    return this.password;
   }
 
-  get email() {
-    return this._email;
+  getEmail() {
+    return this.email;
   }
 
-  get first_name() {
-    return this._first_name;
+  getFirst_name() {
+    return this.first_name;
   }
 
-  get last_name() {
-    return this._last_name;
+  getLast_name() {
+    return this.last_name;
   }
 
-  get birthdate() {
-    return this._birthdate;
+  getBirthdate() {
+    return this.birthdate;
   }
 
-  get created_at() {
-    return this._created_at;
+  getCreated_at() {
+    return this.created_at;
   }
 
-  get updated_at() {
-    return this._updated_at;
+  getUpdated_at() {
+    return this.updated_at;
   }
 
-  set password(password) {
-    this._password = password;
+  setPassword(password) {
+    this.password = password;
   }
 
-  set email(email) {
-    this._email = email;
+  setEmail(email) {
+    this.email = email;
   }
 
-  set first_name(first_name) {
-    this._first_name = first_name;
+  setFirst_name(first_name) {
+    this.first_name = first_name;
   }
 
-  set last_name(last_name) {
-    this._last_name = last_name;
+  setLast_name(last_name) {
+    this.last_name = last_name;
   }
 
-  set birthdate(birthdate) {
-    this._birthdate = birthdate;
+  setBirthdate(birthdate) {
+    this.birthdate = birthdate;
   }
 
-  set created_at(created_at) {
-    this._created_at = created_at;
+  setCreated_at(created_at) {
+    this.created_at = created_at;
   }
 
-  set updated_at(updated_at) {
-    this._updated_at = updated_at;
+  setUpdated_at(updated_at) {
+    this.updated_at = updated_at;
   }
 }

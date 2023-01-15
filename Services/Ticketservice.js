@@ -22,6 +22,30 @@ export class Ticketservice {
     await dbsql("DROP TABLE tickets");
   }
 
+  async getAllTicketsOfDB() {
+    const res = await dbsql("SELECT * FROM tickets");
+    if (res.rowCount === 0) {
+      throw new Error("No Tickets found");
+    } else {
+      const ticketlist = [];
+      for (const ticket of res.rows) {
+        let t = new Ticket(
+          ticket.ticket_id,
+          ticket.user_id,
+          ticket.event_name,
+          ticket.start_date,
+          ticket.end_date,
+          ticket.ticket_details,
+          ticket.active,
+          ticket.redeem_days,
+          ticket.last_redeemed
+        );
+        ticketlist.push(t);
+      }
+      return ticketlist;
+    }
+  }
+
   async verificate(ticket_id) {
     const res = await dbsql(
       "SELECT * FROM tickets WHERE ticket_id = " + ticket_id
@@ -146,7 +170,6 @@ export class Ticketservice {
 
   async getAllTicketsOfUser(user_id) {
     const res = await dbsql("SELECT * FROM tickets WHERE user_id = " + user_id);
-    let ds = new Dateservice();
     if (res.rowCount === 0) {
       throw new Error("No Ticket found");
     } else {
@@ -156,12 +179,12 @@ export class Ticketservice {
           ticket.ticket_id,
           ticket.user_id,
           ticket.event_name,
-          ds.getFormattedDate(ticket.start_date),
-          ds.getFormattedDate(ticket.end_date),
+          ticket.start_date,
+          ticket.end_date,
           ticket.ticket_details,
           ticket.active,
           ticket.redeem_days,
-          ds.getFormattedDate(ticket.last_redeemed)
+          ticket.last_redeemed
         );
         ticketlist.push(t);
       }

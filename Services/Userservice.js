@@ -22,6 +22,30 @@ export class Userservice {
     await dbsql("DROP TABLE users");
   }
 
+  async getAllUsersOfDB() {
+    const res = await dbsql("SELECT * FROM users");
+    let ds = new Dateservice();
+    if (res.rowCount === 0) {
+      throw new Error("No users found");
+    } else {
+      const userlist = [];
+      for (const user of res.rows) {
+        let u = new User(
+          user.user_id,
+          user.password,
+          user.email,
+          user.first_name,
+          user.last_name,
+          ds.getFormattedDate(user.birthdate),
+          user.created_at,
+          user.updated_at
+        );
+        userlist.push(u);
+      }
+      return userlist;
+    }
+  }
+
   async register(user) {
     let res = await dbsql(
       `SELECT email FROM users WHERE email = '${user.email}'`

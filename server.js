@@ -38,12 +38,13 @@ const swaggerDocs = swaggerJSDoc(swaggerOptions);
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
-//Befehle zur Verwaltung der Ticket-Tabellen sowie Befüllung mit Testdaten
+//Befehle zur Verwaltung der Ticket-Tabellen sowie Befüllung mit Testdaten. Nur für die Entwicklung!
 /**
  * @swagger
  * /api/ticket/createTable:
  *   post:
  *     summary: Creates the table for the tickets in the database.
+ *     description: Only for dev.
  *     responses:
  *       200:
  *         description: Success
@@ -59,6 +60,7 @@ app.post("/api/ticket/createTable", async (req, res) => {
  * /api/ticket/addExamples:
  *   post:
  *     summary: Adds the example data to the ticket table in the database.
+ *     description: Only for dev.
  *     responses:
  *       200:
  *         description: Success
@@ -74,6 +76,7 @@ app.post("/api/ticket/addExamples", async (req, res) => {
  * /api/ticket/deleteTable:
  *   delete:
  *     summary: Deletes the ticket table in the database.
+ *     description: Only for dev.
  *     responses:
  *       200:
  *         description: Success
@@ -84,12 +87,13 @@ app.delete("/api/ticket/deleteTable", async (req, res) => {
   res.sendStatus(200);
 });
 
-//Befehle zur Verwaltung der User-Tabellen sowie Befüllung mit Testdaten
+//Folgende Befehle sind zur Verwaltung der User-Tabellen sowie Befüllung mit Testdaten. Nur für die Entwicklung!
 /**
  * @swagger
  * /api/user/createTable:
  *   post:
  *     summary: Creates a table for the users in the database.
+ *     description: Only for dev.
  *     responses:
  *       200:
  *         description: Success
@@ -105,6 +109,7 @@ app.post("/api/user/createTable", async (req, res) => {
  * /api/user/addExamples:
  *   post:
  *     summary: Adds example data to the user table in the database.
+ *     description: Only for dev.
  *     responses:
  *       200:
  *         description: Success
@@ -120,6 +125,7 @@ app.post("/api/user/addExamples", async (req, res) => {
  * /api/user/deleteTable:
  *   delete:
  *     summary: Deletes the users table in the database.
+ *     description: Only for dev.
  *     responses:
  *       200:
  *         description: Success
@@ -130,11 +136,13 @@ app.delete("/api/user/deleteTable", async (req, res) => {
   res.sendStatus(200);
 });
 
+//Befehle zur Verwaltung aller Tabellen. Nur für die Entwicklung!
 /**
  * @swagger
  * /api/createAllTables:
  *   post:
  *     summary: Creates all tables for the backend and adds example data.
+ *     description: Only for dev.
  *     responses:
  *       200:
  *         description: Success
@@ -154,6 +162,7 @@ app.post("/api/createAllTables", async (req, res) => {
  * /api/resetAllTables:
  *   post:
  *     summary: Clears the data in the tables and deletes them. Afterwards the new tables with their example data will be created.
+ *     description: Only for dev.
  *     responses:
  *       200:
  *         description: Success
@@ -168,6 +177,104 @@ app.post("/api/resetAllTables", async (req, res) => {
   await us.exampleData();
   await ts.exampleData();
   res.sendStatus(201);
+});
+
+/**
+ * @swagger
+ *  /api/showTables:
+ *    get:
+ *       summary: Returns all data of the tables.
+ *       description: Only for dev.
+ *       responses:
+ *         200:
+ *           description: Array of all tickets and users.
+ *           schema:
+ *             type: object
+ *             properties:
+ *                 ticketlist:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       ticketId:
+ *                         type: integer
+ *                         example: 1
+ *                       userId:
+ *                         type: integer
+ *                         example: 1
+ *                       eventName:
+ *                         type: string
+ *                         example: "Skipass Oberwallis"
+ *                       startDate:
+ *                         type: date
+ *                         example: "2022-10-31T23:00:00.000Z"
+ *                       endDate:
+ *                         type: date
+ *                         example: "2023-04-29T22:00:00.000Z"
+ *                       ticketDetails:
+ *                         type: string
+ *                         example: "Saisonticket"
+ *                       active:
+ *                         type: boolean
+ *                         example: true
+ *                       redeemDays:
+ *                         type: integer
+ *                         example: 2
+ *                       lastRedeemed:
+ *                         type: date
+ *                         example: "2023-01-14T23:00:00.000Z"
+ *                 userlist:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       user_id:
+ *                         type: integer
+ *                         example: 1
+ *                       userId:
+ *                         type: integer
+ *                         example: 1
+ *                       eventName:
+ *                         type: string
+ *                         example: "Skipass Oberwallis"
+ *                       startDate:
+ *                         type: date
+ *                         example: "2022-10-31T23:00:00.000Z"
+ *                       endDate:
+ *                         type: date
+ *                         example: "2023-04-29T22:00:00.000Z"
+ *                       ticketDetails:
+ *                         type: string
+ *                         example: "Saisonticket"
+ *                       active:
+ *                         type: boolean
+ *                         example: true
+ *                       redeemDays:
+ *                         type: integer
+ *                         example: 2
+ *                       lastRedeemed:
+ *                         type: date
+ *                         example: "2023-01-14T23:00:00.000Z"
+ *         400:
+ *           description: No tickets found.
+ *           schema:
+ *             type: object
+ *             properties:
+ *               Error:
+ *                 type: string
+ *                 example: "No Tickets found"
+ */
+//Ausgabe aller Daten der DB in Arrays. 
+app.get("/api/showTables", async (req, res) => {
+  let ts = new Ticketservice();
+  let us = new Userservice();
+  try {
+    let ticketlist = await ts.getAllTicketsOfDB();
+    let userlist = await us.getAllUsersOfDB();
+    res.json({ ticketlist, userlist });
+  } catch (error) {
+    res.status(400).json({ Error: error.message });
+  }
 });
 
 //Endpoints für alle Anfragen zu Tickets.
@@ -359,12 +466,12 @@ app.post("/api/ticket/activate/:id", async (req, res) => {
  *                         ticketId: 1
  *                         userId: 1
  *                         eventName: "Skipass Oberwallis"
- *                         startDate: "2022-11-01"
- *                         endDate: "2023-04-30"
+ *                         startDate: "2022-10-31T23:00:00.000Z"
+ *                         endDate: "2023-04-29T22:00:00.000Z"
  *                         ticketDetails: "Saisonticket"
  *                         active: true
  *                         redeemDays: 2
- *                         lastRedeemed: "2023-01-14"
+ *                         lastRedeemed: "2023-01-14T23:00:00.000Z"
  *         400:
  *           description: No tickets found.
  *           schema:
