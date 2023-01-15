@@ -1,5 +1,15 @@
 export class Ticket {
-  constructor(ticketId, userId, eventName, startDate, endDate, ticketDetails, active, redeemDays, lastRedeemed) {
+  constructor(
+    ticketId,
+    userId,
+    eventName,
+    startDate,
+    endDate,
+    ticketDetails,
+    active,
+    redeemDays,
+    lastRedeemed
+  ) {
     this.ticketId = ticketId;
     this.userId = userId;
     this.eventName = eventName;

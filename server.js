@@ -430,9 +430,21 @@ app.get("/api/ticket/allOfUser/:userid", async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               account:
+ *               user_id:
+ *                 type: integer
+ *                 example: "1"
+ *               email:
  *                 type: string
  *                 example: "max.mustermann@example.com"
+ *               first_name:
+ *                 type: string
+ *                 example: "Max"
+ *               last_name:
+ *                 type: string
+ *                 example: "Mustermann"
+ *               birthdate:
+ *                 type: date
+ *                 example: "1980-01-01"
  *         400:
  *           description: E-Mail can't be used.
  *           schema:
@@ -465,8 +477,14 @@ app.post("/api/user/register", async (req, res) => {
       null
     );
     try {
-      let user_email = await us.register(user);
-      res.json({ account: user_email });
+      let registeredUser = await us.register(user);
+      res.json({
+        user_id: registeredUser.user_id,
+        email: registeredUser.email,
+        first_name: registeredUser.first_name,
+        last_name: registeredUser.last_name,
+        birthdate: registeredUser.birthdate,
+      });
     } catch (error) {
       res.status(400).json({ Error: error.message });
     }
