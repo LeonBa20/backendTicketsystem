@@ -108,34 +108,25 @@ export class Ticketservice{
     const res = await dbsql('UPDATE tickets SET active = false WHERE ticket_id =' +ticket_id);
     if (res.rowCount === 0) {
       throw new Error("Ticket_id not found");
-    } else if (res.rowCount > 1) {
-      throw new Error("Several tickets changed!");
-    } else {
-      let result = "Ticket deactivated";
-      return result;
     }
   }
 
   async activateTicket(ticket_id) {
     const res = await dbsql('UPDATE tickets SET active = true WHERE ticket_id =' +ticket_id);
     if (res.rowCount === 0) {
-      throw new Error('Ticket_id not found');
-    } else if (res.rowCount > 1) {
-      throw new Error('Several tickets changed!');
-    } else {
-      let result = "Ticket activated";
-      return result;
+      throw new Error("Ticket_id not found");
     }
   }
 
   async getAllTicketsOfUser(user_id) {
     const res = await dbsql('SELECT * FROM tickets WHERE user_id = ' + user_id);
+    let ds = new Dateservice();
     if (res.rowCount === 0) {
-      throw new Error('No Ticket found');
+      throw new Error("No Ticket found");
     } else {
       const ticketlist = [];
       for (const ticket of res.rows) {
-        let t = new Ticket(ticket.ticket_id, ticket.user_id, ticket.event_name, ticket.start_date, ticket.end_date, ticket.ticket_details, ticket.active, ticket.redeem_days, ticket.last_redeemed);
+        let t = new Ticket(ticket.ticket_id, ticket.user_id, ticket.event_name, ds.getFormattedDate(ticket.start_date), ds.getFormattedDate(ticket.end_date), ticket.ticket_details, ticket.active, ticket.redeem_days, ds.getFormattedDate(ticket.last_redeemed));
         ticketlist.push(t);
       }
       return ticketlist;
