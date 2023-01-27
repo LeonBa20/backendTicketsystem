@@ -6,6 +6,7 @@ import express from "express";
 import cors from "cors";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import { Ticket } from "./AllObjects/Ticket.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -422,6 +423,94 @@ app.post("/api/ticket/activate/:id", async (req, res) => {
 
 /**
  * @swagger
+ *  /api/ticket/add:
+ *    post:
+ *       summary: Add a new ticket to a user.
+ *       parameters:
+ *         - in: body
+ *           name: ticketDetails
+ *           description: The user registration details
+ *           schema:
+ *             type: object
+ *             required:
+ *               - user_id
+ *               - event_name
+ *               - start_date
+ *               - end_date
+ *               - ticket_details
+ *               - redeem_days
+ *             properties:
+ *               user_id:
+ *                 type: int
+ *                 description: The user's id
+ *                 example: "4"
+ *               event_name:
+ *                 type: string
+ *                 description: The name of the event
+ *                 example: "Skipass Oberwallis"
+ *               start_date:
+ *                 type: date
+ *                 description: The beginning of a time period to redeem the ticket. Start and end can be on the same day.
+ *                 example: "2023-02-01"
+ *               end_date:
+ *                 type: date
+ *                 description: The end of a time period to redeem a ticket.
+ *                 example: "2023-02-06"
+ *               ticket_details:
+ *                 type: string
+ *                 description: Details of a ticket like class.
+ *                 example: "Preferential ticket"
+ *               redeem_days:
+ *                 type: int
+ *                 description: Enter a value if the ticket is day-dependent. If not, do not fill in.
+ *                 example: 2
+ *       responses:
+ *         200:
+ *           description: Ticket added.
+ *         400:
+ *           description: There was an error.
+ */
+//Registrierung eines Nutzers
+app.post("/api/ticket/add", async (req, res) => {
+  let ts = new Ticketservice();
+  if (req.body.event_name == null) {
+    res.json({
+      user_id: "fill in",
+      event_name: "fill in",
+      start_date: "YEAR-MONTH-DAY",
+      end_date: "YEAR-MONTH-DAY",
+      ticket_details: "fill in",
+      redeem_days: "if day-based, fill in"
+    });
+  } else {
+    //Prüfung, ob es sich um ein tagesgebundenes Ticket handelt. Ist dies nicht der Fall, wird der redeem_days Wert auf null gesetzt.
+    if (req.body.redeem_days == null) { 
+      let days = null;
+    } else {
+      let days = req.body.redeem_days;
+    }
+    let ticket = new Ticket(
+      null,
+      req.body.user_id,
+      req.body.event_name,
+      req.body.start_date,
+      req.body.end_date,
+      req.body.ticket_details,
+      null,
+      days, 
+      null
+    );
+    try {
+      await ts.addTicket(ticket);
+      res.status(200);
+    } catch (error) {
+      res.status(400).json({ Error: error.message });
+    }
+  }
+});
+
+/**
+ * @swagger
  *  /api/ticket/allOfUser/{userid}:
  *    get:
  *       summary: Returns all tickets of a user.
@@ -570,7 +659,7 @@ app.post("/api/user/register", async (req, res) => {
       password: "fill in",
       first_name: "fill in",
       last_name: "fill in",
-      birthdate: "YEAR-MONTH-DAY",
+      birthdate: "YEAR-MONTH-DAY"
     });
   } else {
     let user = new User(

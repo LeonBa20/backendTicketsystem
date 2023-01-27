@@ -168,6 +168,10 @@ export class Ticketservice {
     }
   }
 
+  async addTicket(ticket) {
+    await dbsql(`INSERT INTO tickets (user_id, event_name, start_date, end_date, ticket_details, redeem_days) VALUES ('${ticket.user_id}', '${ticket.event_name}', '${ticket.start_date}', '${ticket.end_date}', '${ticket.ticket_details}', '${ticket.redeem_days}')`);
+  }
+
   async getAllTicketsOfUser(user_id) {
     const res = await dbsql("SELECT * FROM tickets WHERE user_id = " + user_id);
     if (res.rowCount === 0) {
