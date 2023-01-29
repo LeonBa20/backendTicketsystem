@@ -470,7 +470,7 @@ app.post("/api/ticket/activate/:id", async (req, res) => {
  *         400:
  *           description: There was an error.
  */
-//Registrierung eines Nutzers
+//Kauf eines neuen Tickets
 app.post("/api/ticket/add", async (req, res) => {
   let ts = new Ticketservice();
   if (req.body.event_name == null) {
@@ -484,10 +484,11 @@ app.post("/api/ticket/add", async (req, res) => {
     });
   } else {
     //Prüfung, ob es sich um ein tagesgebundenes Ticket handelt. Ist dies nicht der Fall, wird der redeem_days Wert auf null gesetzt.
+    let days;
     if (req.body.redeem_days == null) { 
-      let days = null;
+      days = null;
     } else {
-      let days = req.body.redeem_days;
+      days = req.body.redeem_days;
     }
     let ticket = new Ticket(
       null,
@@ -501,8 +502,8 @@ app.post("/api/ticket/add", async (req, res) => {
       null
     );
     try {
-      await ts.addTicket(ticket);
-      res.status(200);
+      ts.addTicket(ticket);
+      res.sendStatus(200);
     } catch (error) {
       res.status(400).json({ Error: error.message });
     }

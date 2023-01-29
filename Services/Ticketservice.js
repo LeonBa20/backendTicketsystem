@@ -169,7 +169,11 @@ export class Ticketservice {
   }
 
   async addTicket(ticket) {
-    await dbsql(`INSERT INTO tickets (user_id, event_name, start_date, end_date, ticket_details, redeem_days) VALUES ('${ticket.user_id}', '${ticket.event_name}', '${ticket.start_date}', '${ticket.end_date}', '${ticket.ticket_details}', '${ticket.redeem_days}')`);
+    if (ticket.redeemDays == null) {
+      await dbsql(`INSERT INTO tickets (user_id, event_name, start_date, end_date, ticket_details, redeem_days) VALUES ('${ticket.userId}', '${ticket.eventName}', '${ticket.startDate}', '${ticket.endDate}', '${ticket.ticketDetails}', NULL)`);
+    } else {
+      await dbsql(`INSERT INTO tickets (user_id, event_name, start_date, end_date, ticket_details, redeem_days) VALUES ('${ticket.userId}', '${ticket.eventName}', '${ticket.startDate}', '${ticket.endDate}', '${ticket.ticketDetails}', '${ticket.redeemDays}')`);
+    }
   }
 
   async getAllTicketsOfUser(user_id) {
