@@ -1,5 +1,4 @@
 import dbsql from "./DatabaseSQL.js";
-import { Ticket } from "../AllObjects/Ticket.js";
 import { User } from "../AllObjects/User.js";
 import { Dateservice } from "./Dateservice.js";
 
