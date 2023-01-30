@@ -1,5 +1,7 @@
 import pkg from "pg";
 
+/* Default Methode, zur Kommunikation mit dem SQL Datenbankserver. Ausgabe der Methode ist ein Result Objekt 
+   mit allen relevanten Informationen der SQL Abfrage. */ 
 export default async function dbsql(sqlCommand) {
   const client = new pkg.Client({
     host: "bq3zrot8kwkjsoiu0e7z-postgresql.services.clever-cloud.com",

@@ -2,25 +2,31 @@ import dbsql from "./DatabaseSQL.js";
 import { Ticket } from "../AllObjects/Ticket.js";
 import { Dateservice } from "./Dateservice.js";
 
+//Stellt alle Methoden zur Verarbeitung der Anfragen zu Tickets bereit.
+
 export class Ticketservice {
   constructor() {}
 
+  //Erstellung der Datenbanktabelle.
   async createTicketTable() {
     await dbsql(
       "CREATE TABLE tickets (ticket_id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users (user_id), event_name VARCHAR(255) NOT NULL, start_date DATE NOT NULL, end_date DATE NOT NULL, ticket_details VARCHAR(255) NOT NULL, active BOOLEAN DEFAULT TRUE, redeem_days INTEGER, last_redeemed DATE)"
     );
   }
 
+  //Befüllung der Datenbank mit Testdaten.
   async exampleData() {
     await dbsql(
       "INSERT INTO tickets (user_id, event_name, start_date, end_date, ticket_details, redeem_days) VALUES (1, 'Skipass Oberwallis', '2022-11-01', '2023-04-30', 'Saisonticket', 5), (1, 'Skipass Wagrain', '2023-01-01', '2023-01-30', 'Monatsticket, Januar', NULL), (1, 'Tomorrowland', '2023-07-15', '2023-07-17', '3-Tages-Ticket, VIP-Zugang', NULL), (3, 'Skipass Zermatt', '2023-02-01', '2023-04-01', '2-Monatsticket, Februar - März', 10), (3, 'Rolling Loud', '2023-03-03', '2023-03-05', '3-Tages-Ticket, VIP-Zugang', NULL)"
     );
   }
 
+  //Löschung der Datenbanktabelle.
   async deleteTable() {
     await dbsql("DROP TABLE tickets");
   }
 
+  //Ausgabe aller Einträge der Ticket-DB (nur für die Entwicklung).
   async getAllTicketsOfDB() {
     const res = await dbsql("SELECT * FROM tickets");
     if (res.rowCount === 0) {
@@ -45,6 +51,7 @@ export class Ticketservice {
     }
   }
 
+  //Prüfung auf Gültigkeit eines Tickets.
   async verificate(ticket_id) {
     const res = await dbsql(
       "SELECT * FROM tickets WHERE ticket_id = " + ticket_id
@@ -126,6 +133,7 @@ export class Ticketservice {
     }
   }
 
+  //Deaktivierung eines Tickets.
   async deactivateTicket(ticket_id) {
     const res = await dbsql(
       "UPDATE tickets SET active = false WHERE ticket_id =" + ticket_id
@@ -135,6 +143,7 @@ export class Ticketservice {
     }
   }
 
+  //Aktivierung eines Tickets.
   async activateTicket(ticket_id) {
     const res = await dbsql(
       "UPDATE tickets SET active = true WHERE ticket_id =" + ticket_id
@@ -144,6 +153,7 @@ export class Ticketservice {
     }
   }
 
+  //Hinzufügen (durch Kauf) eines neuen Tickets zu einem Nutzer.
   async addTicket(ticket) {
     if (ticket.redeemDays == null) {
       await dbsql(`INSERT INTO tickets (user_id, event_name, start_date, end_date, ticket_details, redeem_days) VALUES ('${ticket.userId}', '${ticket.eventName}', '${ticket.startDate}', '${ticket.endDate}', '${ticket.ticketDetails}', NULL)`);
@@ -152,6 +162,7 @@ export class Ticketservice {
     }
   }
 
+  //Ausgabe aller Tickets eines Nutzers.
   async getAllTicketsOfUser(user_id) {
     const res = await dbsql("SELECT * FROM tickets WHERE user_id = " + user_id);
     if (res.rowCount === 0) {

@@ -471,7 +471,7 @@ app.post("/api/ticket/activate/:id", async (req, res) => {
  *         400:
  *           description: There was an error.
  */
-//Kauf eines neuen Tickets
+//Kauf eines neuen Tickets.
 app.post("/api/ticket/add", async (req, res) => {
   let ts = new Ticketservice();
   if (req.body.event_name == null) {

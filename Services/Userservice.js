@@ -2,25 +2,30 @@ import dbsql from "./DatabaseSQL.js";
 import { User } from "../AllObjects/User.js";
 import { Dateservice } from "./Dateservice.js";
 
+//Bereistellung der Methoden zur Verarbeitung der Anfragen bezüglich der Nutzerdaten.
 export class Userservice {
   constructor() {}
 
+  //Erstellung der DB Tabelle.
   async createUserTable() {
     await dbsql(
       "CREATE TABLE users (user_id SERIAL PRIMARY KEY, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, first_name VARCHAR(255), last_name VARCHAR(255), birthdate DATE, created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW(), loggedIn BOOLEAN DEFAULT false)"
     );
   }
 
+  //Befüllung der DB Tabelle mit Testdaten.
   async exampleData() {
     await dbsql(
       "INSERT INTO users (password, email, first_name, last_name, birthdate) VALUES ('password1', 'max.mustermann@example.com', 'Max', 'Mustermann', '1980-01-01'), ('password2', 'john.doe@example.com', 'John', 'Doe', '1985-02-14'), ('password3', 'ellen.feuerstein@example.com', 'Ellen', 'Feuerstein', '1990-03-21'), ('password4', 'lena.mueller@example.com', 'Lena', 'Müller', '1995-04-28'), ('password5', 'katharina.musterfrau@example.com', 'Katharina', 'Musterfrau', '2000-05-05')"
     );
   }
 
+  //Löschen der Tabelle.
   async deleteTable() {
     await dbsql("DROP TABLE users");
   }
 
+  //Ausgabe des Besitzers eines Tickets.
   async getOwner(ticket_id) {
     const res = await dbsql(
       "SELECT u.user_id, u.first_name, u.last_name, u.birthdate FROM users u INNER JOIN tickets t ON u.user_id = t.user_id WHERE t.ticket_id = " +
@@ -44,6 +49,7 @@ export class Userservice {
     }
   }
 
+  //Ausgabe aller Nutzer der DB Tabelle (nur für die Entwicklung).
   async getAllUsersOfDB() {
     const res = await dbsql("SELECT * FROM users");
     let ds = new Dateservice();
@@ -68,6 +74,7 @@ export class Userservice {
     }
   }
 
+  //Registrierung eines Nutzers. Bei erfolgreicher Registrierung werden die User-Daten zurückgegeben, um sie im Frontend verwenden zu können.
   async register(user) {
     let res = await dbsql(
       `SELECT email FROM users WHERE email = '${user.email}'`
@@ -95,6 +102,7 @@ export class Userservice {
     }
   }
 
+  //Login eines Nutzers. Bei erfolgreichem Login werden die User-Daten zurückgegeben, um sie im Frontend verwenden zu können.
   async login(email, password) {
     let res = await dbsql(`SELECT * FROM users WHERE email = '${email}'`);
     let ds = new Dateservice();
@@ -123,6 +131,7 @@ export class Userservice {
     }
   }
 
+  //Ausloggen des Nutzers.
   async logout(email) {
     let res = await dbsql(
       `SELECT email, loggedin FROM users WHERE email = '${email}'`
@@ -141,6 +150,7 @@ export class Userservice {
     }
   }
 
+  //Löschen eines Nutzers.
   async deleteUser(email) {
     let res = await dbsql(
       `SELECT email, loggedin FROM users WHERE email = '${email}'`

@@ -1,4 +1,8 @@
 import moment from "moment";
+
+/* Klasse, die Services zu Daten bereitstellt. Die erste Methode ändert das Format eines Datums. Die zweite prüft, ob sich ein Datum
+   innerhalb eines Zeitraums (bestehend aus einem Anfangsatum und Enddatum) befindet. */
+
 export class Dateservice {
   getFormattedDate(date) {
     let dateVar = moment(date);
