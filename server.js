@@ -331,9 +331,10 @@ app.get("/api/showTables", async (req, res) => {
 //Prüfung der Gültigkeit eines Tickets. Handelt es sich um ein Ticket mit tagesbasierter Einlösung, wird dies dementsprechend berücksichtigt.
 app.get("/api/ticket/status/:id", async (req, res) => {
   let ts = new Ticketservice();
+  let us = new Userservice();
   try {
     let result = await ts.verificate(req.params.id);
-    let owner = await ts.getOwner(req.params.id);
+    let owner = await us.getOwner(req.params.id);
     res.json({
       ticket_id: req.params.id,
       active: result,

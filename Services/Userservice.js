@@ -22,6 +22,29 @@ export class Userservice {
     await dbsql("DROP TABLE users");
   }
 
+  async getOwner(ticket_id) {
+    const res = await dbsql(
+      "SELECT u.user_id, u.first_name, u.last_name, u.birthdate FROM users u INNER JOIN tickets t ON u.user_id = t.user_id WHERE t.ticket_id = " +
+        ticket_id
+    );
+    let ds = new Dateservice();
+    if (res.rows[0] == null) {
+      throw new Error("Ticket not found");
+    } else {
+      let u = new User(
+        res.rows[0].user_id,
+        null,
+        null,
+        res.rows[0].first_name,
+        res.rows[0].last_name,
+        ds.getFormattedDate(res.rows[0].birthdate),
+        null,
+        null
+      );
+      return u;
+    }
+  }
+
   async getAllUsersOfDB() {
     const res = await dbsql("SELECT * FROM users");
     let ds = new Dateservice();
